@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./css/StudyBrowser.css" media="screen" />
+
+    <script src="./jslib/jquery-1.11.3.min.js"></script>
+    <script src="./jslib/jquery.dataTables.min.js"></script>
+
+    <script>
+      $(document).ready(function() {
+      } );
+
+
+      var normalizeStudy = function(study) {
+        if (!study['00100010']) {
+          study['00100010'].Value[0].Alphabetic = "Unspecified";
+        }
+        var tags = ['00100040', '00080061', '00080020', '00080030', '00100020'];
+        tags.forEach(function(tag) {
+          if (!study[tag] || !study[tag].Value) {
+            study[tag] = { Value : ['Unspecified'] };
+          }
+        });
+      }
+
+      var studiesToTable = function(studies) {
+        var table = [];
+        studies.forEach(function(study) {
+          try {
+            normalizeStudy(study);
+            var row = [
+              study['0020000D'].Value[0],
+              study['00100010'].Value[0].Alphabetic,
+              study['00100040'].Value[0],
+              study['00080061'].Value[0],
+              study['00080020'].Value[0] + "." + study['00080030'].Value[0],
+              study['00100020'].Value[0]
+            ];
+            table.push(row);
+          }
+          catch(err) {
+            console.log(err);
+            console.log(study);
+          }
+        });
+        return(table);
+      };
+
+      var studyQueryURL = 'https://vna.hackathon.siim.org/dcm4chee-arc/qido/DCM4CHEE/studies/?00100010=SIIM'
+      var queryResult = [];
+      var jqxhr = $.ajax( studyQueryURL )
+        .done(function(studies) {
+          console.log(studies);
+          queryResult = queryResult.concat(studiesToTable(studies));
+        })
+        .fail(function() {
+          alert( "error!" );
+        })
+        .always(function() {
+          console.log(queryResult);
+          var studyTable = $('#studyTable').DataTable({
+            data : queryResult,
+            columns : [
+              { title: "StudyUID" },
+              { title: "Name" },
+              { title: "Sex" },
+              { title: "Modality" },
+              { title: "Date" },
+              { title: "Study" },
+            ],
+            scrollY : "350px",
+            scrollCollapse : true,
+            paging : false,
+            rowID : "StudyUID",
+            initComplete : function () {
+              var api = this.api();
+              api.column(0).visible( false );
+              api.$('tr').click( function () {
+                var row = api.row(this)[0][0];
+                var studyUID = studyTable.data()[row][0];
+                console.log(studyUID);
+                document.title = studyUID;
+              });
+            },
+          });
+        });
+
+    </script>
+
+    <title>SlicerDICOMWeb StudyBrowser</title>
+
+  </head>
+
+<body>
+
+<header>
+  <div class="container">
+    <h1>Slicer DICOMWeb Study Browser</h1>
+    <h2>Studies pulled via the DICOMWeb interface</h2>
+  </div>
+</header>
+
+<table id="studyTable" class="display" cellspacing="0" width="100%"> </table>
+
+</body>
+</html>
