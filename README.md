@@ -9,6 +9,17 @@ It is a *very* incomplete start, developed during the hackathon at the [2015 DIC
 ** Query, retrieve, store...
 * experiment with building core functionality in javascript for use in both slicer on the desktop and in webbrowsers
 
+## Code organization
+* StudyBrowser is a web page that
+ * uses jquery and datatables to present a simple user interface
+ * interacts with the DICOMWeb server to pull down a list of studies
+ * allows the user to select a study
+* DICOMWebInterface is a slicer scripted module that
+ * creates a QWebView
+ * loads StudyBrowser/index.html
+ * listens for signals to indicate study selection
+ * uses DICOMWeb rest API to pull down selected instances
+
 ## Current status:
 * Able to query a list of studies at a hard-coded dcm4chee installation (experimental installation at siim.org)
 * Results stored in a clickable [datatable](http://datatables.net/)
