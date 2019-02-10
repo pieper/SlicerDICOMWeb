@@ -5,22 +5,22 @@ from slicer.ScriptedLoadableModule import *
 import logging
 
 #
-# DICOMWebInterface
+# DICOMwebInterface
 #
 
-class DICOMWebInterface(ScriptedLoadableModule):
+class DICOMwebInterface(ScriptedLoadableModule):
   """Uses ScriptedLoadableModule base class, available at:
   https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
   """
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
-    self.parent.title = "DICOMWebInterface" # TODO make this more human readable by adding spaces
+    self.parent.title = "DICOMwebInterface" # TODO make this more human readable by adding spaces
     self.parent.categories = ["Informatics"]
     self.parent.dependencies = []
     self.parent.contributors = ["Steve Pieper (Isomics, Inc.)"] # replace with "Firstname Lastname (Organization)"
     self.parent.helpText = """
-    Builds an interface to servers supporting DICOMWeb RS API
+    Builds an interface to servers supporting DICOMweb RS API
     """
     self.parent.acknowledgementText = """
     This file was originally developed by Jean-Christophe Fillion-Robin, Kitware Inc.
@@ -28,10 +28,10 @@ class DICOMWebInterface(ScriptedLoadableModule):
 """ # replace with organization, grant and thanks.
 
 #
-# DICOMWebInterfaceWidget
+# DICOMwebInterfaceWidget
 #
 
-class DICOMWebInterfaceWidget(ScriptedLoadableModuleWidget):
+class DICOMwebInterfaceWidget(ScriptedLoadableModuleWidget):
   """Uses ScriptedLoadableModuleWidget base class, available at:
   https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
   """
@@ -58,10 +58,10 @@ class DICOMWebInterfaceWidget(ScriptedLoadableModuleWidget):
     pass
 
 #
-# DICOMWebInterfaceLogic
+# DICOMwebInterfaceLogic
 #
 
-class DICOMWebInterfaceLogic(ScriptedLoadableModuleLogic):
+class DICOMwebInterfaceLogic(ScriptedLoadableModuleLogic):
   """This class should implement all the actual
   computation done by your module.  The interface
   should be such that other python code can import
@@ -72,7 +72,7 @@ class DICOMWebInterfaceLogic(ScriptedLoadableModuleLogic):
   """
 
 
-  # TODO: convert to DICOMWeb
+  # TODO: convert to DICOMweb
   def fetchAndLoadSeries(self,seriesUID):
     tmpdir = tempfile.mkdtemp()
 
@@ -100,7 +100,7 @@ class DICOMWebInterfaceLogic(ScriptedLoadableModuleLogic):
       status, node = slicer.util.loadVolume(filesToLoad[0], {}, returnNode=True)
     return node
 
-  def fetchAndLoadDICOMWebStudy(self,dicomWebServer, studyUID):
+  def fetchAndLoadDICOMwebStudy(self,dicomWebServer, studyUID):
     """Download the study data from DICOM Web
     """
     import urllib
@@ -119,7 +119,7 @@ class DICOMWebInterfaceLogic(ScriptedLoadableModuleLogic):
       urllib.urlretrieve(instanceURL, instanceFilePath)
 
 
-class DICOMWebInterfaceTest(ScriptedLoadableModuleTest):
+class DICOMwebInterfaceTest(ScriptedLoadableModuleTest):
   """
   This is the test case for your scripted module.
   Uses ScriptedLoadableModuleTest base class, available at:
@@ -135,7 +135,7 @@ class DICOMWebInterfaceTest(ScriptedLoadableModuleTest):
     """Run as few or as many tests as needed here.
     """
     self.setUp()
-    self.test_DICOMWebInterface1()
+    self.test_DICOMwebInterface1()
 
   # TODO: click callback
   def webViewLinkClickedCallback(self,qurl):
@@ -146,34 +146,12 @@ class DICOMWebInterfaceTest(ScriptedLoadableModuleTest):
     if url == 'chart':
       self.chartTest()
 
-  # TODO: Form
-  def webViewFormTest(self):
-    """Just as a demo, load a google search in a web view
-    and use the qt api to fill in a search term"""
-    self.webView = qt.QWebView()
-    self.webView.settings().setAttribute(qt.QWebSettings.DeveloperExtrasEnabled, True)
-    self.webView.connect('loadFinished(bool)', self.webViewFormLoadedCallback)
-    self.webView.show()
-    u = qt.QUrl('http://www.google.com')
-    self.webView.setUrl(u)
-
-  # TODO: Form
-  def webViewFormLoadedCallback(self,ok):
-    if not ok:
-      print('page did not load')
-      return
-    page = self.webView.page()
-    frame = page.mainFrame()
-    document = frame.documentElement()
-    element = document.findFirst('.lst')
-    element.setAttribute("value", "where can I learn more about this 3D Slicer program?")
-
-  def loadDICOMWebStudy(self,studyUID):
-    logic = DICOMWebInterfaceLogic()
+  def loadDICOMwebStudy(self,studyUID):
+    logic = DICOMwebInterfaceLogic()
     print(self.dicomWebServer, studyUID)
-    logic.fetchAndLoadDICOMWebStudy(self.dicomWebServer, studyUID)
+    logic.fetchAndLoadDICOMwebStudy(self.dicomWebServer, studyUID)
 
-  def test_DICOMWebInterface1(self):
+  def test_DICOMwebInterface1(self):
     """ Ideally you should have several levels of tests.  At the lowest level
     tests should exercise the functionality of the logic with different inputs
     (both valid and invalid).  At higher levels your tests should emulate the
@@ -188,20 +166,17 @@ class DICOMWebInterfaceTest(ScriptedLoadableModuleTest):
     self.delayDisplay("Starting the test", 50)
 
     webPath = os.path.dirname(os.path.dirname(slicer.modules.dicomwebinterface.path))
-    url = os.path.join('file://', webPath, 'StudyBrowser/index.html')
+    url = 'file://' + os.path.join(webPath, 'StudyBrowser/index.html')
 
-    webView = qt.QWebView()
-    webView.settings().setAttribute(qt.QWebSettings.DeveloperExtrasEnabled, True)
-    webView.page().setLinkDelegationPolicy(qt.QWebPage.DelegateAllLinks)
-    webView.connect('linkClicked(QUrl)', self.webViewLinkClickedCallback)
-    webView.setGeometry(50, 50, 942, 667)
+    webWidget = slicer.qSlicerWebWidget()
+    slicerGeometry = slicer.util.mainWindow().geometry
+    webWidget.size = qt.QSize(900,600)
+    webWidget.pos = qt.QPoint(slicerGeometry.x() + 256, slicerGeometry.y() + 128)
 
-    self.dicomWebServer = 'http://vna.hackathon.siim.org/dcm4chee-arc/qido/DCM4CHEE'
-    frame = webView.page().mainFrame()
-    frame.connect('titleChanged(QString)', self.loadDICOMWebStudy)
+    self.dicomWebServer = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs'
 
+    webWidget.url = url+"?server="+self.dicomWebServer
+    print(url)
+    webWidget.show()
 
-    webView.setUrl(qt.QUrl(url))
-    webView.show()
-
-    slicer.modules.DICOMWebInterfaceWidget.webView = webView
+    slicer.modules.DICOMwebInterfaceWidget.webWidget = webWidget

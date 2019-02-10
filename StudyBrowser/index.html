@@ -50,7 +50,10 @@
         return(table);
       };
 
-      var studyQueryURL = 'https://vna.hackathon.siim.org/dcm4chee-arc/qido/DCM4CHEE/studies/?00100010=SIIM'
+      let url = new URL(window.location.href);
+
+      var server = url.searchParams.get('server');
+      var studyQueryURL = server + "/studies";
       var queryResult = [];
       var jqxhr = $.ajax( studyQueryURL )
         .done(function(studies) {
@@ -58,7 +61,7 @@
           queryResult = queryResult.concat(studiesToTable(studies));
         })
         .fail(function() {
-          alert( "error!" );
+          alert( "error!" + studyQueryURL );
         })
         .always(function() {
           console.log(queryResult);
@@ -91,7 +94,7 @@
 
     </script>
 
-    <title>SlicerDICOMWeb StudyBrowser</title>
+    <title>SlicerDICOMweb StudyBrowser</title>
 
   </head>
 
@@ -99,8 +102,8 @@
 
 <header>
   <div class="container">
-    <h1>Slicer DICOMWeb Study Browser</h1>
-    <h2>Studies pulled via the DICOMWeb interface</h2>
+    <h1>Slicer DICOMweb Study Browser</h1>
+    <h2>Studies pulled via the DICOMweb interface</h2>
   </div>
 </header>
 
