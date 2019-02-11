@@ -59,6 +59,7 @@
         .done(function(studies) {
           console.log(studies);
           queryResult = queryResult.concat(studiesToTable(studies));
+          $('#subtitle').text("Studies from " + server);
         })
         .fail(function() {
           alert( "error!" + studyQueryURL );
@@ -87,6 +88,7 @@
                 var studyUID = studyTable.data()[row][0];
                 console.log(studyUID);
                 document.title = studyUID;
+                slicerPython.evalPython('hoot')
               });
             },
           });
@@ -103,7 +105,7 @@
 <header>
   <div class="container">
     <h1>Slicer DICOMweb Study Browser</h1>
-    <h2>Studies pulled via the DICOMweb interface</h2>
+    <h2 id="subtitle">Studies pulled via the DICOMweb interface</h2>
   </div>
 </header>
 
